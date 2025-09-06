@@ -15,6 +15,7 @@ public class AppWorkerDbContext : IdentityDbContext<UserEntity, RoleEntity, long
     }
 
     public DbSet<PlaylistEntity> Playlists { get; set; }
+    public DbSet<TrackEntity> Tracks { get; set; }
     public DbSet<PlaylistTrackEntity> PlaylistTracks { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
