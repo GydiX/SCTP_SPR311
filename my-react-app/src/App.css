@@ -1,0 +1,107 @@
+/* Music Player Styles */
+.music-player {
+  background: linear-gradient(135deg, #1db954 0%, #1ed760 100%);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.music-player-controls {
+  transition: all 0.2s ease-in-out;
+}
+
+.music-player-controls:hover {
+  transform: scale(1.05);
+}
+
+.music-player-progress {
+  background: linear-gradient(to right, #1db954 0%, #1db954 var(--progress, 0%), #4a4a4a var(--progress, 0%), #4a4a4a 100%);
+}
+
+.music-player-progress::-webkit-slider-thumb {
+  appearance: none;
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  background: #1db954;
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.music-player-progress::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.music-player-progress::-moz-range-thumb {
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  background: #1db954;
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.music-player-progress::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.music-player-volume::-webkit-slider-thumb {
+  appearance: none;
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  background: #1db954;
+  cursor: pointer;
+  border: 1px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.music-player-volume::-moz-range-thumb {
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  background: #1db954;
+  cursor: pointer;
+  border: 1px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Track cover animation */
+.track-cover {
+  transition: transform 0.3s ease;
+}
+
+.track-cover:hover {
+  transform: scale(1.05);
+}
+
+/* Play button animation */
+.play-button {
+  transition: all 0.2s ease;
+}
+
+.play-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .music-player {
+    padding: 0.75rem;
+  }
+  
+  .music-player .flex {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .music-player .flex-1 {
+    flex: none;
+  }
+}

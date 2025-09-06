@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using WebWorker.Data.Entities.Identity;
+using WebWorker.Data.Entities;
 
 namespace WebWorker.Data;
 
@@ -12,6 +13,8 @@ public class AppWorkerDbContext : IdentityDbContext<UserEntity, RoleEntity, long
     public AppWorkerDbContext(DbContextOptions<AppWorkerDbContext> options) : base(options)
     {
     }
+
+    public DbSet<TrackEntity> Tracks { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
