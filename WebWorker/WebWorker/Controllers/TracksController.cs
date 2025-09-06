@@ -119,4 +119,117 @@ public class TracksController(AppWorkerDbContext appDbContext) : ControllerBase
 
         return Ok($"Додано {testTracks.Count} тестових треків");
     }
+
+    [HttpPost("create")]
+    public async Task<IActionResult> CreateTrack([FromBody] CreateTrackModel createTrackModel)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var trackEntity = new TrackEntity
+        {
+            Id = Guid.NewGuid().ToString(),
+            Title = createTrackModel.Title,
+            Artist = createTrackModel.Artist,
+            Album = createTrackModel.Album,
+            Duration = createTrackModel.Duration,
+            ImageUrl = createTrackModel.ImageUrl,
+            PreviewUrl = createTrackModel.PreviewUrl
+        };
+
+        appDbContext.Tracks.Add(trackEntity);
+        await appDbContext.SaveChangesAsync();
+
+        var trackModel = new TrackModel
+        {
+            Id = trackEntity.Id,
+            Title = trackEntity.Title,
+            Artist = trackEntity.Artist,
+            Album = trackEntity.Album,
+            Duration = trackEntity.Duration,
+            ImageUrl = trackEntity.ImageUrl,
+            PreviewUrl = trackEntity.PreviewUrl
+        };
+
+        return CreatedAtAction(nameof(GetTrackById), new { id = trackEntity.Id }, trackModel);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetTrackById(string id)
+    {
+        var track = await appDbContext.Tracks
+            .Where(t => t.Id == id)
+            .Select(t => new TrackModel
+            {
+                Id = t.Id,
+                Title = t.Title,
+                Artist = t.Artist,
+                Album = t.Album,
+                Duration = t.Duration,
+                ImageUrl = t.ImageUrl,
+                PreviewUrl = t.PreviewUrl
+            })
+            .FirstOrDefaultAsync();
+
+        if (track == null)
+        {
+            return NotFound($"Трек з ID {id} не знайдено");
+        }
+
+        return Ok(track);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateTrack(string id, [FromBody] CreateTrackModel updateTrackModel)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var trackEntity = await appDbContext.Tracks.FindAsync(id);
+        if (trackEntity == null)
+        {
+            return NotFound($"Трек з ID {id} не знайдено");
+        }
+
+        trackEntity.Title = updateTrackModel.Title;
+        trackEntity.Artist = updateTrackModel.Artist;
+        trackEntity.Album = updateTrackModel.Album;
+        trackEntity.Duration = updateTrackModel.Duration;
+        trackEntity.ImageUrl = updateTrackModel.ImageUrl;
+        trackEntity.PreviewUrl = updateTrackModel.PreviewUrl;
+
+        await appDbContext.SaveChangesAsync();
+
+        var trackModel = new TrackModel
+        {
+            Id = trackEntity.Id,
+            Title = trackEntity.Title,
+            Artist = trackEntity.Artist,
+            Album = trackEntity.Album,
+            Duration = trackEntity.Duration,
+            ImageUrl = trackEntity.ImageUrl,
+            PreviewUrl = trackEntity.PreviewUrl
+        };
+
+        return Ok(trackModel);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteTrack(string id)
+    {
+        var trackEntity = await appDbContext.Tracks.FindAsync(id);
+        if (trackEntity == null)
+        {
+            return NotFound($"Трек з ID {id} не знайдено");
+        }
+
+        appDbContext.Tracks.Remove(trackEntity);
+        await appDbContext.SaveChangesAsync();
+
+        return Ok($"Трек {trackEntity.Title} успішно видалено");
+    }
 }

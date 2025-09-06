@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WebWorker.Data;
@@ -11,9 +12,11 @@ using WebWorker.Data;
 namespace WebWorker.Migrations
 {
     [DbContext(typeof(AppWorkerDbContext))]
-    partial class AppWorkerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250906085129_AddTracksTable")]
+    partial class AddTracksTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
