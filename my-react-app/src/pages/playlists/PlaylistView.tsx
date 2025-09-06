@@ -1,24 +1,38 @@
 import * as React from "react";
 import {useParams} from "react-router-dom";
 import {Playlist, Track} from "../../types/playlists";
-import {listPlaylists, removeTrackFromPlaylist} from "../../services/playlistsLocal";
+import {getPlaylist, removeTrackFromPlaylist} from "../../services/playlistsApi";
 
 const PlaylistView: React.FC = () => {
     const { id } = useParams();
     const [playlist, setPlaylist] = React.useState<Playlist | null>(null);
 
     React.useEffect(() => {
-        const all = listPlaylists();
-        const found = all.find(p => p.id === id);
-        setPlaylist(found ?? null);
+        if (id) {
+            loadPlaylist();
+        }
     }, [id]);
 
-    const handleRemove = (trackId: string) => {
+    const loadPlaylist = async () => {
+        if (!id) return;
+        try {
+            const playlistData = await getPlaylist(id);
+            setPlaylist(playlistData);
+        } catch (error) {
+            console.error('Failed to load playlist:', error);
+            setPlaylist(null);
+        }
+    };
+
+    const handleRemove = async (trackId: string) => {
         if (!playlist) return;
-        removeTrackFromPlaylist(playlist.id, trackId);
-        const all = listPlaylists();
-        const found = all.find(p => p.id === playlist.id) || null;
-        setPlaylist(found);
+        try {
+            await removeTrackFromPlaylist(playlist.id, trackId);
+            // Reload playlist to get updated data
+            await loadPlaylist();
+        } catch (error) {
+            console.error('Failed to remove track:', error);
+        }
     };
 
     if (!playlist) return <div style={{padding: 16}}>Playlist not found</div>;
