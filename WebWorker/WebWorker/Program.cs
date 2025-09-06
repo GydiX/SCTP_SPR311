@@ -43,7 +43,7 @@ app.UseCors(opt =>
     opt.AllowAnyHeader()
        .AllowAnyMethod()
        .AllowCredentials()
-       .WithOrigins(builder.Configuration["ClientAppUrl"]!);
+       .SetIsOriginAllowed(origin => true); // Р”РѕР·РІРѕР»СЏС”РјРѕ РІСЃС– origins РґР»СЏ С‚РµСЃС‚СѓРІР°РЅРЅСЏ
 });
 
 app.UseSwagger();
@@ -53,7 +53,7 @@ var dirName = "images";
 string path = Path.Combine(Directory.GetCurrentDirectory(), dirName);
 Directory.CreateDirectory(path);
 
-//Налаштування статичний файлів
+//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(path),

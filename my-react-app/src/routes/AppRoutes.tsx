@@ -7,7 +7,7 @@ import NotFound from "../pages/NotFound.tsx";
 import PlaylistsPage from "../pages/playlists/PlaylistsPage";
 import PlaylistView from "../pages/playlists/PlaylistView";
 import UserView from "../pages/user/UserView.tsx";
-
+import SearchResults from "../pages/search/SearchResults.tsx";
 
 const AppRoutes: React.FC = () => {
     return (
@@ -19,14 +19,13 @@ const AppRoutes: React.FC = () => {
                     <Route index element={<PlaylistsPage />} />
                     <Route path={":id"} element={<PlaylistView />} />
                 </Route>
+                <Route path={"search"} element={<SearchResults />} />
                 <Route path={"user"}>
                     <Route path={":id"} element={<UserView />} />
                 </Route>
-
             </Route>
 
             <Route path="*" element={<NotFound />} />
-
         </Routes>
     )
 }

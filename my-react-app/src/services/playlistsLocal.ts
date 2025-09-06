@@ -1,4 +1,4 @@
-import {Playlist, Track} from "../types/playlists";
+import type {Playlist, Track} from "../types/playlists";
 
 const STORAGE_KEY = "app.playlists";
 
