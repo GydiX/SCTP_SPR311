@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Playlist, Track} from "../types/playlists";
+import type {Playlist, Track} from "../types/playlists";
 import {addTrackToPlaylist, listPlaylists} from "../services/playlistsApi";
 
 type Props = {

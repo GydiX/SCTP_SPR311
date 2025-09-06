@@ -1,4 +1,4 @@
-import { Playlist, Track } from "../types/playlists";
+import type { Playlist, Track } from "../types/playlists";
 import EnvConfig from "../config/env";
 
 const API_BASE_URL = EnvConfig.API_URL;
