@@ -63,7 +63,7 @@ const UsersList: React.FC = () => {
                                 </thead>
                                 <tbody className="divide-y divide-black/5 dark:divide-white/10">
                                 {users.map((u) => (
-                                    <UserRow user={u} initials={initials} />
+                                    <UserRow user={u} key={u.id} initials={initials} />
                                 ))}
                                 </tbody>
 
