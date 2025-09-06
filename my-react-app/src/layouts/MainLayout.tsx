@@ -1,5 +1,6 @@
 import React from "react";
 import { Outlet, Link } from "react-router-dom";
+import SearchBar from "../components/SearchBar";
 
 const MainLayout: React.FC = () => {
     return (
@@ -11,13 +12,12 @@ const MainLayout: React.FC = () => {
                         Наш магазин
                     </Link>
 
+                    {/* Search Bar */}
+                    <div className="flex-1 max-w-md mx-8">
+                        <SearchBar />
+                    </div>
+
                     <nav className="flex items-center gap-4">
-                        {/*<Link*/}
-                        {/*    to="/"*/}
-                        {/*    className="text-sm font-medium text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white"*/}
-                        {/*>*/}
-                        {/*    Користувачі*/}
-                        {/*</Link>*/}
                         <Link
                             to="/login"
                             className="text-sm font-medium text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white"
