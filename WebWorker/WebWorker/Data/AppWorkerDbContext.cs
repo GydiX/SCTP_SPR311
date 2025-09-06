@@ -14,7 +14,9 @@ public class AppWorkerDbContext : IdentityDbContext<UserEntity, RoleEntity, long
     {
     }
 
+    public DbSet<PlaylistEntity> Playlists { get; set; }
     public DbSet<TrackEntity> Tracks { get; set; }
+    public DbSet<PlaylistTrackEntity> PlaylistTracks { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -31,6 +33,28 @@ public class AppWorkerDbContext : IdentityDbContext<UserEntity, RoleEntity, long
                 .WithMany(r => r.UserRoles)
                 .HasForeignKey(u => u.UserId)
                 .IsRequired();
+        });
+
+        // Configure PlaylistEntity
+        builder.Entity<PlaylistEntity>(p =>
+        {
+            p.HasOne(p => p.User)
+                .WithMany()
+                .HasForeignKey(p => p.UserId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+
+            p.HasMany(p => p.Tracks)
+                .WithOne(t => t.Playlist)
+                .HasForeignKey(t => t.PlaylistId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Configure PlaylistTrackEntity
+        builder.Entity<PlaylistTrackEntity>(t =>
+        {
+            t.HasIndex(t => new { t.PlaylistId, t.TrackId }).IsUnique();
         });
     }
 }

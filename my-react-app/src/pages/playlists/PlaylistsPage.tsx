@@ -8,15 +8,37 @@ const PlaylistsPage: React.FC = () => {
     const [newName, setNewName] = React.useState("");
 
     React.useEffect(() => {
-        setPlaylists(listPlaylists());
+        loadPlaylists();
     }, []);
 
-    const handleCreate = (e: React.FormEvent) => {
+    const loadPlaylists = async () => {
+        try {
+            const playlistsData = await listPlaylists();
+            setPlaylists(playlistsData);
+        } catch (error) {
+            console.error('Failed to load playlists:', error);
+        }
+    };
+
+    const handleCreate = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!newName.trim()) return;
-        const created = createPlaylist(newName.trim());
-        setPlaylists(prev => [...prev, created]);
-        setNewName("");
+        try {
+            const created = await createPlaylist(newName.trim());
+            setPlaylists(prev => [...prev, created]);
+            setNewName("");
+        } catch (error) {
+            console.error('Failed to create playlist:', error);
+        }
+    };
+
+    const handleDelete = async (playlistId: string) => {
+        try {
+            await deletePlaylist(playlistId);
+            setPlaylists(prev => prev.filter(p => p.id !== playlistId));
+        } catch (error) {
+            console.error('Failed to delete playlist:', error);
+        }
     };
 
     return (
@@ -43,7 +65,15 @@ const PlaylistsPage: React.FC = () => {
                                 <div style={{fontWeight: 600}}>{p.name}</div>
                                 <div style={{fontSize: 12, color: "#666"}}>{p.tracks.length} tracks</div>
                             </div>
-                            <Link to={`/playlists/${p.id}`}>Open</Link>
+                            <div style={{display: "flex", gap: 8, alignItems: "center"}}>
+                                <Link to={`/playlists/${p.id}`}>Open</Link>
+                                <button 
+                                    onClick={() => handleDelete(p.id)}
+                                    style={{padding: "4px 8px", fontSize: "12px", color: "#dc3545", border: "1px solid #dc3545", background: "white", cursor: "pointer"}}
+                                >
+                                    Delete
+                                </button>
+                            </div>
                         </li>
                     ))}
                 </ul>

@@ -1,6 +1,6 @@
 import * as React from "react";
 import {Playlist, Track} from "../types/playlists";
-import {addTrackToPlaylist, listPlaylists} from "../services/playlistsLocal";
+import {addTrackToPlaylist, listPlaylists} from "../services/playlistsApi";
 
 type Props = {
     track: Track;
@@ -12,13 +12,26 @@ const AddToPlaylist: React.FC<Props> = ({ track, onAdded }) => {
     const [selectedId, setSelectedId] = React.useState<string>("");
 
     React.useEffect(() => {
-        setPlaylists(listPlaylists());
+        loadPlaylists();
     }, []);
 
-    const handleAdd = () => {
+    const loadPlaylists = async () => {
+        try {
+            const playlistsData = await listPlaylists();
+            setPlaylists(playlistsData);
+        } catch (error) {
+            console.error('Failed to load playlists:', error);
+        }
+    };
+
+    const handleAdd = async () => {
         if (!selectedId) return;
-        addTrackToPlaylist(selectedId, track);
-        onAdded?.();
+        try {
+            await addTrackToPlaylist(selectedId, track);
+            onAdded?.();
+        } catch (error) {
+            console.error('Failed to add track to playlist:', error);
+        }
     };
 
     if (playlists.length === 0) return <span>Create a playlist first</span>;

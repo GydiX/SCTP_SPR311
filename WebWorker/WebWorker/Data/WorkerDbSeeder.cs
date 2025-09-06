@@ -14,7 +14,7 @@ public static class WorkerDbSeeder
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserEntity>>();
 
         // Ensure the database is created and migrations are applied
-        await dbContext.Database.MigrateAsync();
+        // await dbContext.Database.MigrateAsync(); // Temporarily disabled
 
         // Seed roles
         foreach (var role in Constants.Roles.AllRoles)
