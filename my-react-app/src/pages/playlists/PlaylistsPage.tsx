@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Playlist} from "../../types/playlists";
+import type {Playlist} from "../../types/playlists";
 import {createPlaylist, listPlaylists} from "../../services/playlistsLocal";
 import {Link} from "react-router-dom";
 
