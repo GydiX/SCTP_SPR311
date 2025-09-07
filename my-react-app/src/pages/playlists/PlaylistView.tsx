@@ -1,7 +1,8 @@
 import * as React from "react";
 import {useParams} from "react-router-dom";
 import type {Playlist, Track} from "../../types/playlists";
-import {listPlaylists, removeTrackFromPlaylist} from "../../services/playlistsLocal";
+import {removeTrackFromPlaylist} from "../../services/playlistsLocal";
+import {getPlaylist} from "../../services/playlistsApi";
 
 const PlaylistView: React.FC = () => {
     const { id } = useParams();

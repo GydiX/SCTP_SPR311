@@ -25,10 +25,10 @@ const AddTrackForm: React.FC<AddTrackFormProps> = ({ onTrackAdded, onClose }) =>
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<Partial<TrackFormData>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof TrackFormData, string>>>({});
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<TrackFormData> = {};
+    const newErrors: Partial<Record<keyof TrackFormData, string>> = {};
 
     if (!formData.title.trim()) {
       newErrors.title = 'Назва треку обов\'язкова';

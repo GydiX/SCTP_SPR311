@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { trackService, Track } from '../services/trackService';
+import { trackService } from '../services/trackService';
+import type { Track } from '../services/trackService';
 
 // Використовуємо Track з trackService
 
@@ -22,7 +23,6 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
 
   // Завантаження треків з API
   const [apiTracks, setApiTracks] = useState<Track[]>([]);
-  const [isLoadingTracks, setIsLoadingTracks] = useState(true);
 
   useEffect(() => {
     const loadTracks = async () => {
@@ -31,8 +31,6 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
         setApiTracks(tracks);
       } catch (error) {
         console.error('Помилка при завантаженні треків:', error);
-      } finally {
-        setIsLoadingTracks(false);
       }
     };
 

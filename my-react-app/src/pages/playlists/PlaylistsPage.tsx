@@ -1,6 +1,7 @@
 import * as React from "react";
 import type {Playlist} from "../../types/playlists";
 import {createPlaylist, listPlaylists} from "../../services/playlistsLocal";
+import {deletePlaylist} from "../../services/playlistsApi";
 import {Link} from "react-router-dom";
 
 const PlaylistsPage: React.FC = () => {

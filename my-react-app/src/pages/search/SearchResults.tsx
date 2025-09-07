@@ -94,7 +94,7 @@ const SearchResults: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-black/5 dark:divide-white/10">
-                {results.tracks.map((track, index) => (
+                {results.tracks.map((track: ITrack, index: number) => (
                   <tr key={track.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-800">
                     <td className="px-5 py-4 text-neutral-500 dark:text-neutral-400">
                       {index + 1}
