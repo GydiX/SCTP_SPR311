@@ -1,4 +1,6 @@
-const API_BASE_URL = 'http://localhost:5264/api/tracks';
+import EnvConfig from '../config/env';
+
+const API_BASE_URL = `${EnvConfig.API_URL || 'http://localhost:5264'}/api/tracks`;
 
 export interface Track {
   id: string;

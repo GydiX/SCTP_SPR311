@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Outlet, Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Outlet, Link, useLocation } from "react-router-dom";
 import SearchBar from "../components/SearchBar";
 import MusicPlayer from "../components/MusicPlayer";
 import AddTrackForm from "../components/AddTrackForm";
@@ -7,6 +7,9 @@ import AddTrackForm from "../components/AddTrackForm";
 const MainLayout: React.FC = () => {
     const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
     const [showAddTrackForm, setShowAddTrackForm] = useState(false);
+    const [tracksReloadKey, setTracksReloadKey] = useState(0);
+    const [justAddedTrackId, setJustAddedTrackId] = useState<string | undefined>(undefined);
+    const location = useLocation();
 
     const handleTrackChange = (index: number) => {
         setCurrentTrackIndex(index);
@@ -14,8 +17,17 @@ const MainLayout: React.FC = () => {
 
     const handleTrackAdded = (newTrack: any) => {
         console.log('Новий трек додано:', newTrack);
-        // Тут можна додати логіку для оновлення списку треків
+        // Оновити список треків у програвачі
+        setTracksReloadKey(prev => prev + 1);
+        setJustAddedTrackId(newTrack?.id);
     };
+
+    // Закривати модалку при зміні маршруту
+    useEffect(() => {
+        if (showAddTrackForm) {
+            setShowAddTrackForm(false);
+        }
+    }, [location.pathname]);
 
     return (
         <div className="min-h-screen flex flex-col bg-neutral-50 dark:bg-neutral-900">
@@ -57,6 +69,8 @@ const MainLayout: React.FC = () => {
             <MusicPlayer 
                 currentTrackIndex={currentTrackIndex}
                 onTrackChange={handleTrackChange}
+                reloadKey={tracksReloadKey}
+                desiredTrackId={justAddedTrackId}
             />
 
             {/* Add Track Form Modal */}

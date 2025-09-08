@@ -29,6 +29,7 @@ builder.Services.AddIdentity<UserEntity, RoleEntity>(opt =>
     .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+builder.Services.AddSingleton<ISpotifyAuthService, SpotifyAuthService>();
 
 builder.Services.AddSwaggerGen();
 
@@ -49,15 +50,24 @@ app.UseCors(opt =>
 app.UseSwagger();
 app.UseSwaggerUI();
 
-var dirName = "images";
-string path = Path.Combine(Directory.GetCurrentDirectory(), dirName);
-Directory.CreateDirectory(path);
-
-//������������ ��������� �����
+// Serve static images
+var imagesDirName = "images";
+string imagesPath = Path.Combine(Directory.GetCurrentDirectory(), imagesDirName);
+Directory.CreateDirectory(imagesPath);
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(path),
-    RequestPath = $"/{dirName}"
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(imagesPath),
+    RequestPath = $"/{imagesDirName}"
+});
+
+// Serve static audio
+var audioDirName = "audio";
+string audioPath = Path.Combine(Directory.GetCurrentDirectory(), audioDirName);
+Directory.CreateDirectory(audioPath);
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(audioPath),
+    RequestPath = $"/{audioDirName}"
 });
 
 // Configure the HTTP request pipeline.

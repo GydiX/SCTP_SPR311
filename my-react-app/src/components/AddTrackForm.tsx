@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import EnvConfig from '../config/env';
+import { spotifyService, type SpotifyTrackItem } from '../services/spotifyService';
 
 interface TrackFormData {
   title: string;
@@ -26,6 +28,10 @@ const AddTrackForm: React.FC<AddTrackFormProps> = ({ onTrackAdded, onClose }) =>
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof TrackFormData, string>>>({});
+  const [spotifyQuery, setSpotifyQuery] = useState('');
+  const [spotifyResults, setSpotifyResults] = useState<SpotifyTrackItem[]>([]);
+  const [isSearchingSpotify, setIsSearchingSpotify] = useState(false);
+  const [generalError, setGeneralError] = useState<string | null>(null);
 
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof TrackFormData, string>> = {};
@@ -93,7 +99,7 @@ const AddTrackForm: React.FC<AddTrackFormProps> = ({ onTrackAdded, onClose }) =>
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('http://localhost:5264/api/tracks/create', {
+      const response = await fetch(`${EnvConfig.API_URL || 'http://localhost:5264'}/api/tracks/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -102,8 +108,17 @@ const AddTrackForm: React.FC<AddTrackFormProps> = ({ onTrackAdded, onClose }) =>
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Помилка при створенні треку');
+        let errorText = 'Помилка при створенні треку';
+        try {
+          const ct = response.headers.get('content-type') || '';
+          if (ct.includes('application/json')) {
+            const errorData = await response.json();
+            errorText = errorData.message || JSON.stringify(errorData);
+          } else {
+            errorText = await response.text();
+          }
+        } catch {}
+        throw new Error(errorText);
       }
 
       const newTrack = await response.json();
@@ -119,12 +134,46 @@ const AddTrackForm: React.FC<AddTrackFormProps> = ({ onTrackAdded, onClose }) =>
         previewUrl: ''
       });
 
+      setGeneralError(null);
       onClose?.();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Помилка при створенні треку:', error);
-      alert('Помилка при створенні треку. Спробуйте ще раз.');
+      setGeneralError(error?.message || 'Помилка при створенні треку. Спробуйте ще раз.');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleSpotifySearch = async () => {
+    if (!spotifyQuery.trim()) return;
+    try {
+      setIsSearchingSpotify(true);
+      const items = await spotifyService.searchTracks(spotifyQuery.trim());
+      setSpotifyResults(items);
+      setGeneralError(null);
+    } catch (e) {
+      console.error(e);
+      setGeneralError('Помилка пошуку у Spotify');
+    } finally {
+      setIsSearchingSpotify(false);
+    }
+  };
+
+  const fillFromSpotify = (item: SpotifyTrackItem) => {
+    setFormData(prev => ({
+      ...prev,
+      title: item.name || prev.title,
+      artist: item.artists?.map(a => a.name).join(', ') || prev.artist,
+      album: item.album?.name || prev.album,
+      imageUrl: item.album?.images?.[0]?.url || prev.imageUrl,
+      previewUrl: item.preview_url || prev.previewUrl,
+      duration: item.duration_ms ? Math.max(1, Math.floor(item.duration_ms / 1000)) : prev.duration
+    }));
+
+    if (!item.preview_url) {
+      setGeneralError("У цього треку немає preview_url у Spotify. Додайте URL вручну.");
+    } else {
+      setGeneralError(null);
     }
   };
 
@@ -152,6 +201,47 @@ const AddTrackForm: React.FC<AddTrackFormProps> = ({ onTrackAdded, onClose }) =>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {generalError && (
+            <div className="p-3 rounded-lg bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300 text-sm">
+              {generalError}
+            </div>
+          )}
+          {/* Spotify пошук */}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Знайти у Spotify</label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={spotifyQuery}
+                onChange={(e) => setSpotifyQuery(e.target.value)}
+                className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white"
+                placeholder="Назва пісні або виконавець"
+              />
+              <button
+                type="button"
+                onClick={handleSpotifySearch}
+                disabled={isSearchingSpotify}
+                className="px-4 py-2 bg-neutral-200 dark:bg-neutral-700 rounded-lg hover:bg-neutral-300 dark:hover:bg-neutral-600 disabled:opacity-50"
+              >
+                {isSearchingSpotify ? 'Пошук...' : 'Пошук'}
+              </button>
+            </div>
+            {spotifyResults.length > 0 && (
+              <div className="max-h-48 overflow-auto border border-neutral-200 dark:border-neutral-700 rounded-lg divide-y divide-neutral-200 dark:divide-neutral-700">
+                {spotifyResults.map(item => (
+                  <button
+                    type="button"
+                    key={item.id}
+                    onClick={() => fillFromSpotify(item)}
+                    className="w-full text-left p-2 hover:bg-neutral-50 dark:hover:bg-neutral-700"
+                  >
+                    <div className="text-sm font-medium text-neutral-900 dark:text-white">{item.name}</div>
+                    <div className="text-xs text-neutral-500">{item.artists?.map(a => a.name).join(', ')} • {item.album?.name}</div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <div>
             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
               Назва треку *
