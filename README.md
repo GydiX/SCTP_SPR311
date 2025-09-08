@@ -1,6 +1,9 @@
 Spotify Clone - Team Project
 Computer Academy STEP - SPR311
 
+Helper
+Новак Володимир Миколайович
+
 Members:
 Гидін Михайло Андрійович - TL
 Потапчук Дмитро Миколайович
