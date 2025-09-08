@@ -1,7 +1,7 @@
 Spotify Clone - Team Project
 Computer Academy STEP - SPR311
 
-Helper
+Helper:
 Новак Володимир Миколайович
 
 Members:
