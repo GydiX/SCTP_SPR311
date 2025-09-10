@@ -6,5 +6,5 @@ public class RegisterModel
     public string LastName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
-    public IFormFile? ImageFile { get; set; } = null;
+    // public IFormFile? ImageFile { get; set; } = null; // При реєстрації через JSON це не потрібно
 }

@@ -37,7 +37,7 @@ namespace WebWorker.Controllers
 
             var existingUser = await userManager.FindByEmailAsync(googleUser!.Email);
 
-            //уже уже зареєструвався, але хоче зайти через Google
+            //уже вже зареєструвався, але хоче зайти через Google
             if (existingUser != null)
             {
                 //Шукаємо чи він входив через Google
@@ -110,7 +110,7 @@ namespace WebWorker.Controllers
 
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromForm] RegisterModel model)
+        public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
             if (string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.Password))
             {
@@ -129,22 +129,13 @@ namespace WebWorker.Controllers
                 LastName = model.LastName
             };
 
-            if (model.ImageFile != null)
-            {
-                var imageName = $"{Guid.NewGuid()}{Path.GetExtension(model.ImageFile.FileName)}";
-                var path = Path.Combine(Directory.GetCurrentDirectory(), "images", imageName);
-                using (var stream = new FileStream(path, FileMode.Create))
-                {
-                    await model.ImageFile.CopyToAsync(stream);
-                }
-                user.Image = imageName;
-            }
+            // Если нужен аватар, реализуйте отдельную загрузку
+
             var result = await userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
             {
                 return BadRequest(result.Errors.Select(e => e.Description));
             }
-            // Optionally, assign a default role to the user
             await userManager.AddToRoleAsync(user, Constants.Roles.User);
             var token = await jwtTokenService.GenerateTokenAsync(user);
             return Ok(new

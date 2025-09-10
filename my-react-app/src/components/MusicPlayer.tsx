@@ -8,18 +8,23 @@ interface MusicPlayerProps {
   tracks?: Track[];
   currentTrackIndex?: number;
   onTrackChange?: (index: number) => void;
+  reloadKey?: number;
+  desiredTrackId?: string;
 }
 
 const MusicPlayer: React.FC<MusicPlayerProps> = ({ 
   tracks = [], 
   currentTrackIndex = 0, 
-  onTrackChange 
+  onTrackChange,
+  reloadKey,
+  desiredTrackId
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const userPausedRef = useRef<boolean>(false);
 
   // Завантаження треків з API
   const [apiTracks, setApiTracks] = useState<Track[]>([]);
@@ -35,7 +40,24 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
     };
 
     loadTracks();
-  }, []);
+  }, [reloadKey]);
+
+  // Після завантаження треків — якщо задано потрібний трек, переключитися на нього і відтворити
+  useEffect(() => {
+    if (!desiredTrackId) return;
+    const tracksToUse = tracks.length > 0 ? tracks : (apiTracks.length > 0 ? apiTracks : []);
+    if (tracksToUse.length === 0) return;
+    const index = tracksToUse.findIndex(t => t.id === desiredTrackId);
+    if (index >= 0) {
+      onTrackChange?.(index);
+      // Дати React змінити трек, потім спробувати автопрогравання
+      setTimeout(() => {
+        if (!userPausedRef.current && audioRef.current) {
+          audioRef.current.play().catch(() => {});
+        }
+      }, 50);
+    }
+  }, [desiredTrackId, apiTracks, tracks]);
 
   // Демо треки для тестування (якщо API недоступний)
   const demoTracks: Track[] = [
@@ -75,13 +97,22 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
 
     const updateTime = () => setCurrentTime(audio.currentTime);
     const updateDuration = () => setDuration(audio.duration);
+    const handleAudioPlay = () => { setIsPlaying(true); userPausedRef.current = false; };
+    const handleAudioPause = () => { setIsPlaying(false); userPausedRef.current = true; };
+    const handleAudioEnded = () => { setIsPlaying(false); };
 
     audio.addEventListener('timeupdate', updateTime);
     audio.addEventListener('loadedmetadata', updateDuration);
+    audio.addEventListener('play', handleAudioPlay);
+    audio.addEventListener('pause', handleAudioPause);
+    audio.addEventListener('ended', handleAudioEnded);
 
     return () => {
       audio.removeEventListener('timeupdate', updateTime);
       audio.removeEventListener('loadedmetadata', updateDuration);
+      audio.removeEventListener('play', handleAudioPlay);
+      audio.removeEventListener('pause', handleAudioPause);
+      audio.removeEventListener('ended', handleAudioEnded);
     };
   }, []);
 
@@ -99,12 +130,14 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
     const audio = audioRef.current;
     if (!audio) return;
 
-    if (isPlaying) {
-      audio.pause();
+    if (audio.paused) {
+      userPausedRef.current = false;
+      audio.play().catch(() => {});
     } else {
-      audio.play();
+      userPausedRef.current = true;
+      audio.pause();
     }
-    setIsPlaying(!isPlaying);
+    // isPlaying will be synced by audio 'play'/'pause' event listeners
   };
 
   const handlePrevious = () => {
