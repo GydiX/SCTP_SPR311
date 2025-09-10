@@ -36,37 +36,41 @@ const UsersList: React.FC = () => {
     return (
         <>
             <div className="w-full">
-                {/* Блок даного коду завжди скиритий, але якщо екран більший sm або рівний sm*/}
+                {/* Header Section */}
+                <div className="mb-8">
+                    <h1 className="text-3xl font-bold text-white mb-2">Користувачі</h1>
+                    <p className="text-gray-400">{users.length} користувачів</p>
+                </div>
+
+                {/* Desktop Table View */}
                 <div className="hidden md:block overflow-x-auto">
-                    <div
-                        className="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm ring-1 ring-black/5 overflow-hidden">
-                        {/* Header */}
-                        <div
-                            className="flex items-center justify-between gap-3 px-5 py-4 border-b border-black/10 dark:border-white/10">
-                            <h2 className="text-lg font-semibold">Користувачі</h2>
-                            <div className="text-sm text-neutral-500">{users.length} запис(ів)</div>
+                    <div className="spotify-card overflow-hidden">
+                        {/* Table Header */}
+                        <div className="px-6 py-4 border-b border-gray-800">
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-lg font-semibold text-white">Список користувачів</h2>
+                                <div className="text-sm text-gray-400">{users.length} запис(ів)</div>
+                            </div>
                         </div>
 
 
                         {/* Table container with horizontal scroll on small screens */}
                         <div className="overflow-x-auto">
                             <table className="min-w-full text-left align-middle">
-                                <thead
-                                    className="bg-neutral-50 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 text-xs uppercase tracking-wider">
+                                <thead className="bg-gray-800 text-gray-300 text-xs uppercase tracking-wider">
                                 <tr>
-                                    <th className="px-5 py-3 font-semibold">ID</th>
-                                    <th className="px-5 py-3 font-semibold">Користувач</th>
-                                    <th className="px-5 py-3 font-semibold">Email</th>
-                                    <th className="px-5 py-3 font-semibold">Ролі</th>
-                                    <th className="px-5 py-3 font-semibold text-right">Дії</th>
+                                    <th className="px-6 py-4 font-semibold">ID</th>
+                                    <th className="px-6 py-4 font-semibold">Користувач</th>
+                                    <th className="px-6 py-4 font-semibold">Email</th>
+                                    <th className="px-6 py-4 font-semibold">Ролі</th>
+                                    <th className="px-6 py-4 font-semibold text-right">Дії</th>
                                 </tr>
                                 </thead>
-                                <tbody className="divide-y divide-black/5 dark:divide-white/10">
+                                <tbody className="divide-y divide-gray-800">
                                 {users.map((u) => (
                                     <UserRow user={u} key={u.id} initials={initials} />
                                 ))}
                                 </tbody>
-
                             </table>
                         </div>
 
@@ -75,13 +79,11 @@ const UsersList: React.FC = () => {
                 </div>
 
                 {/* Mobile-friendly stacked view (shown only <sm) */}
-                <div className="md:hidden mt-4 space-y-3">
+                <div className="md:hidden space-y-4">
                     {users.map((u) => (
-                        <div key={u.id}
-                             className="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm ring-1 ring-black/5 p-4">
+                        <div key={u.id} className="spotify-card p-4">
                             <div className="flex items-center gap-3">
-                                <div
-                                    className="h-10 w-10 rounded-full bg-neutral-200 dark:bg-neutral-700 overflow-hidden grid place-items-center text-sm font-medium">
+                                <div className="h-12 w-12 rounded-full bg-gray-700 overflow-hidden grid place-items-center text-sm font-medium">
                                     {u.image ? (
                                         <img
                                             className="h-full w-full object-cover"
@@ -93,33 +95,33 @@ const UsersList: React.FC = () => {
                                             }}
                                         />
                                     ) : (
-                                        <span>{initials(u.fullName)}</span>
+                                        <span className="text-white">{initials(u.fullName)}</span>
                                     )}
                                 </div>
                                 <div className="flex-1">
-                                    <div className="font-medium">{u.fullName}</div>
-                                    <div className="text-xs text-neutral-500">{u.email}</div>
+                                    <div className="font-medium text-white">{u.fullName}</div>
+                                    <div className="text-xs text-gray-400">{u.email}</div>
                                 </div>
                             </div>
                             <div className="mt-3 flex flex-wrap gap-2">
                                 {u.roles.map((r, i) => (
                                     <span
                                         key={i}
-                                        className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 border border-black/5 dark:border-white/10"
+                                        className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-gray-800 text-gray-300 border border-gray-700"
                                     >
                                         {r}
                                     </span>
                                 ))}
                             </div>
-                            <div className="mt-3 flex justify-end gap-2">
+                            <div className="mt-4 flex justify-end gap-2">
                                 <button
-                                    className="px-3 py-1.5 rounded-xl text-xs font-medium bg-neutral-900 text-white hover:opacity-90 dark:bg-white dark:text-neutral-900"
+                                    className="spotify-button px-4 py-2 text-xs font-medium"
                                     onClick={() => alert(`Edit user ${u.id}`)}
                                 >
                                     Редагувати
                                 </button>
                                 <button
-                                    className="px-3 py-1.5 rounded-xl text-xs font-medium bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700"
+                                    className="spotify-button-secondary px-4 py-2 text-xs font-medium"
                                     onClick={() => alert(`Delete user ${u.id}`)}
                                 >
                                     Видалити
