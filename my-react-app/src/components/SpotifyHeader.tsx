@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import SearchBar from './SearchBar';
 
 interface SpotifyHeaderProps {
@@ -11,7 +11,6 @@ const SpotifyHeader: React.FC<SpotifyHeaderProps> = ({
   onToggleSidebar, 
   isSidebarCollapsed = false 
 }) => {
-  const location = useLocation();
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   const navigationButtons = [

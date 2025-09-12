@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Outlet, Link, useLocation } from "react-router-dom";
-import SearchBar from "../components/SearchBar";
+import { Outlet, useLocation } from "react-router-dom";
 import MusicPlayer from "../components/MusicPlayer";
 import AddTrackForm from "../components/AddTrackForm";
 import Sidebar from "../components/Sidebar";
