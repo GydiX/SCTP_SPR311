@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Outlet, Link, useLocation } from "react-router-dom";
-import SearchBar from "../components/SearchBar";
+import { Outlet, useLocation } from "react-router-dom";
 import MusicPlayer from "../components/MusicPlayer";
 import AddTrackForm from "../components/AddTrackForm";
 import Sidebar from "../components/Sidebar";
@@ -35,6 +34,21 @@ const MainLayout: React.FC = () => {
             setShowAddTrackForm(false);
         }
     }, [location.pathname]);
+
+    // Глобальна подія для програвання треку за ID з будь-якої сторінки
+    useEffect(() => {
+        const handler = (e: Event) => {
+            const custom = e as CustomEvent<{ id?: string }>;
+            const id = custom.detail?.id;
+            if (id) {
+                setJustAddedTrackId(id);
+                // Дати плеєру шанс перезавантажити список треків на випадок змін
+                setTracksReloadKey(prev => prev + 1);
+            }
+        };
+        window.addEventListener('app:play-track', handler as EventListener);
+        return () => window.removeEventListener('app:play-track', handler as EventListener);
+    }, []);
 
     return (
         <div className="min-h-screen flex bg-black text-white">

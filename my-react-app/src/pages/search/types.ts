@@ -11,4 +11,5 @@ export interface ITrack {
 export interface ISearchResults {
   tracks: ITrack[];
   total: number;
+  query?: string;
 }

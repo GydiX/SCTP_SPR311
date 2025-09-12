@@ -1,12 +1,14 @@
 import * as React from "react";
 import type {Playlist} from "../../types/playlists";
-import {createPlaylist, listPlaylists} from "../../services/playlistsLocal";
-import {deletePlaylist} from "../../services/playlistsApi";
-import {Link} from "react-router-dom";
+import {createPlaylist, listPlaylists, deletePlaylist} from "../../services/playlistsApi";
+import {Link, useNavigate} from "react-router-dom";
 
 const PlaylistsPage: React.FC = () => {
     const [playlists, setPlaylists] = React.useState<Playlist[]>([]);
     const [newName, setNewName] = React.useState("");
+    const [status, setStatus] = React.useState<string>("");
+    const [submitting, setSubmitting] = React.useState(false);
+    const navigate = useNavigate();
 
     React.useEffect(() => {
         loadPlaylists();
@@ -18,18 +20,27 @@ const PlaylistsPage: React.FC = () => {
             setPlaylists(playlistsData);
         } catch (error) {
             console.error('Failed to load playlists:', error);
+            setStatus('Не вдалося завантажити плейлисти');
         }
     };
 
     const handleCreate = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!newName.trim()) return;
+        setSubmitting(true);
+        setStatus("");
         try {
             const created = await createPlaylist(newName.trim());
             setPlaylists(prev => [...prev, created]);
             setNewName("");
-        } catch (error) {
+            setStatus('Плейлист створено');
+            // Перейти до сторінки щойно створеного плейлиста
+            navigate(`/playlists/${created.id}`);
+        } catch (error: any) {
             console.error('Failed to create playlist:', error);
+            setStatus(typeof error?.message === 'string' ? error.message : 'Не вдалося створити плейлист. Увійдіть у систему.');
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -44,35 +55,39 @@ const PlaylistsPage: React.FC = () => {
 
     return (
         <div style={{padding: 16}}>
-            <h2>Playlists</h2>
+            <h2>Плейлисти</h2>
 
             <form onSubmit={handleCreate} style={{margin: "12px 0", display: "flex", gap: 8}}>
                 <input
-                    placeholder="New playlist name"
+                    placeholder="Назва нового плейлиста"
                     value={newName}
                     onChange={e => setNewName(e.target.value)}
                     style={{padding: 8, flex: 1}}
                 />
-                <button type="submit">Create</button>
+                <button type="submit" disabled={!newName.trim() || submitting}>{submitting ? 'Створення...' : 'Створити'}</button>
             </form>
 
+            {status && (
+                <div style={{marginBottom: 12, color: '#999'}}>{status}</div>
+            )}
+
             {playlists.length === 0 ? (
-                <p>No playlists yet. Create one above.</p>
+                <p>Плейлистів ще немає. Створіть перший вище.</p>
             ) : (
                 <ul style={{listStyle: "none", padding: 0}}>
                     {playlists.map(p => (
                         <li key={p.id} style={{padding: 8, borderBottom: "1px solid #eee", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
                             <div>
                                 <div style={{fontWeight: 600}}>{p.name}</div>
-                                <div style={{fontSize: 12, color: "#666"}}>{p.tracks.length} tracks</div>
+                                <div style={{fontSize: 12, color: "#666"}}>{p.tracks.length} треків</div>
                             </div>
                             <div style={{display: "flex", gap: 8, alignItems: "center"}}>
-                                <Link to={`/playlists/${p.id}`}>Open</Link>
+                                <Link to={`/playlists/${p.id}`}>Відкрити</Link>
                                 <button 
                                     onClick={() => handleDelete(p.id)}
                                     style={{padding: "4px 8px", fontSize: "12px", color: "#dc3545", border: "1px solid #dc3545", background: "white", cursor: "pointer"}}
                                 >
-                                    Delete
+                                    Видалити
                                 </button>
                             </div>
                         </li>

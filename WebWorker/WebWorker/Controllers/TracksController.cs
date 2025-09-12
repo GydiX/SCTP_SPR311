@@ -232,4 +232,12 @@ public class TracksController(AppWorkerDbContext appDbContext) : ControllerBase
 
         return Ok($"Трек {trackEntity.Title} успішно видалено");
     }
+
+    [HttpDelete("all")]
+    public async Task<IActionResult> DeleteAllTracks()
+    {
+        // Видаляємо всі треки одним запитом
+        var deletedCount = await appDbContext.Tracks.ExecuteDeleteAsync();
+        return Ok($"Видалено треків: {deletedCount}");
+    }
 }
