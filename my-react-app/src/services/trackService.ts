@@ -122,6 +122,16 @@ class TrackService {
     
     return response.text();
   }
+
+  async deleteAllTracks(): Promise<string> {
+    const response = await fetch(`${API_BASE_URL}/all`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      throw new Error('Помилка при видаленні всіх треків');
+    }
+    return response.text();
+  }
 }
 
 export const trackService = new TrackService();

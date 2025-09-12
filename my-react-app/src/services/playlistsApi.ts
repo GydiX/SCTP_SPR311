@@ -1,7 +1,7 @@
 import type { Playlist, Track } from "../types/playlists";
 import EnvConfig from "../config/env";
 
-const API_BASE_URL = EnvConfig.API_URL;
+const API_BASE_URL = EnvConfig.API_URL || "http://localhost:5264";
 
 interface ApiPlaylist {
     id: number;
@@ -55,7 +55,7 @@ function convertApiTrackToTrack(apiTrack: ApiTrack): Track {
 }
 
 async function makeRequest<T>(url: string, options: RequestInit = {}): Promise<T> {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('auth_token');
     
     const response = await fetch(`${API_BASE_URL}${url}`, {
         ...options,
@@ -67,6 +67,9 @@ async function makeRequest<T>(url: string, options: RequestInit = {}): Promise<T
     });
 
     if (!response.ok) {
+        if (response.status === 401) {
+            throw new Error("Unauthorized. Please sign in to manage playlists.");
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
     }
 
